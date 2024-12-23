@@ -46,7 +46,7 @@ jobs:
       # Démarrer tous les services via Docker Compose (y compris PostgreSQL)
       - name: Run docker-compose
         run: |
-          docker-compose -f docker-compose.yml up -d
+          docker compose -f docker-compose.yml up -d
 
       # Construire et pousser l'image Docker pour user-service après la compilation
       - name: Push Docker image to Docker Hub

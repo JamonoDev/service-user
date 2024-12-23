@@ -151,7 +151,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>transport-user-service-image</finalName>
+		<finalName>transport-user-service</finalName>
 	</build>
 	<repositories>
 		<repository>

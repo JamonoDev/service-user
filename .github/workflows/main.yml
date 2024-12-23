@@ -1,36 +1,73 @@
-name: project transport gateway flow
+name: User Service CI/CD Pipeline
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - "master"  # Déclenche ce workflow uniquement lors d'un push sur la branche `master`
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - "master"  # Déclenche ce workflow lors d'une demande de tirage sur la branche `master`
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Exécution sur Ubuntu
 
     steps:
+      # Checkout du code
       - uses: actions/checkout@v3
+
+      # Configurer JDK 17 pour le projet Java
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
-      - name: Run docker-compose
-        run: docker compose up -d
+          cache: maven  # Utilisation du cache Maven pour accélérer les exécutions futures
 
+      # Installer Docker et Docker Compose
+      - name: Install Docker and Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo apt-get install -y docker-compose
+
+      # Vérifier que Docker et Docker Compose sont installés
+      - name: Verify Docker and Docker Compose installation
+        run: |
+          docker --version
+          docker-compose --version
+
+      # Construire le projet avec Maven pour créer le fichier JAR
       - name: Build with Maven
         run: mvn clean install
 
-      - name: Build & push Docker image
+      # Vérifier la présence du fichier JAR dans le répertoire target
+      - name: Verify JAR in target directory
+        run: |
+          if [ -f target/transport-user-service-image.jar ]; then
+            echo "JAR file found!";
+          else
+            echo "JAR file not found!";
+            exit 1;
+          fi
+
+      # Construire l'image Docker pour le microservice user-service
+      - name: Build Docker image for user-service
+        run: |
+          docker build -t docker.io/jamonodev/user-service-image:latest .
+
+      # Démarrer tous les services via Docker Compose (y compris PostgreSQL)
+      - name: Run docker-compose
+        run: |
+          docker-compose -f docker-compose.yml up -d
+
+      # Construire et pousser l'image Docker pour user-service après la compilation
+      - name: Push Docker image to Docker Hub
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
-          image: jamonodev/transport-user-service
+          image: jamonodev/user-service-image
           tags: latest
           registry: docker.io
-          dockerfile: Dockerfile
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          dockerfile: Dockerfile  # Chemin vers le fichier Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}  # Nom d'utilisateur Docker Hub depuis les secrets
+          password: ${{ secrets.DOCKER_TOKEN }}  # Utilisation du token Docker Hub pour l'authentification

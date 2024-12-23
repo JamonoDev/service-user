@@ -24,19 +24,6 @@ jobs:
           distribution: 'temurin'
           cache: maven  # Utilisation du cache Maven pour accélérer les exécutions futures
 
-      # Installer Docker et Docker Compose
-      - name: Install Docker and Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo apt-get install -y docker-compose
-
-      # Vérifier que Docker et Docker Compose sont installés
-      - name: Verify Docker and Docker Compose installation
-        run: |
-          docker --version
-          docker-compose --version
-
       # Construire le projet avec Maven pour créer le fichier JAR
       - name: Build with Maven
         run: mvn clean install

@@ -57,4 +57,4 @@ jobs:
           registry: docker.io
           dockerfile: Dockerfile  # Chemin vers le fichier Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}  # Nom d'utilisateur Docker Hub depuis les secrets
-          password: ${{ secrets.DOCKER_TOKEN }}  # Utilisation du token Docker Hub pour l'authentification
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Utilisation du token Docker Hub pour l'authentification

@@ -31,7 +31,7 @@ jobs:
       # Vérifier la présence du fichier JAR dans le répertoire target
       - name: Verify JAR in target directory
         run: |
-          if [ -f target/transport-user-service-image.jar ]; then
+          if [ -f target/transport-user-service.jar ]; then
             echo "JAR file found!";
           else
             echo "JAR file not found!";
